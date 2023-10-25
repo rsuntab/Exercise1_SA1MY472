@@ -25,15 +25,40 @@ library(dplyr)
 #We want to see the proportion of admitted among the applicants. 
 #For this, we calculate the percentage. 
 admission_percentages <- function(data, option = "admis_percentages") {
-  transformed_data <- data %>%
+  transformed_data <- data
+  if (option == "admis_percentages") {
+    transformed_data <- data %>%
       group_by(Gender, Dept) %>%
       summarize(
         Applicants = sum(Freq),
         Admitted = sum(Freq[Admit == "Admitted"]),
         Admission_Percentage = (Admitted / Applicants) * 100
       )
+  } else if (option == "totals_and_percentages") {
+    transformed_data <- data %>%
+      group_by(Gender) %>%
+      summarize(
+        Applicants = sum(Freq),
+        Admitted = sum(Freq[Admit == "Admitted"]),
+        Admission_Percentage = (Admitted / Applicants) * 100
+      )
+  }
   return(transformed_data)
 }
 
+
+#We use the function in our database
 result <- admission_percentages(adminberk)
 print(result)
+
+#Then, we will print the solutions with and without the second argument 
+#First, we use the option = "admis_percentages". This result is equal to the default one.
+result1 <- admission_percentages(adminberk, option = "admis_percentages")
+print(result1)
+
+#Second, we use the option = "totals_and_percentages".
+#This will show the total number of applicants and admitted people in the university,
+#only by gender 
+result2 <- admission_percentages(adminberk, option = "totals_and_percentages")
+print(result2)
+
